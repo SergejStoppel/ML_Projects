@@ -1,0 +1,47 @@
+version: "3.9"
+
+networks:
+  rabbitmq-network:
+    driver: bridge
+    name: rabbitmq-network
+
+services:
+  summarizer-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: summarizer-server
+    command: ["server.py"]
+    depends_on:
+      rabbitmq-service:
+        condition: service_healthy 
+    networks:
+      - rabbitmq-network
+
+
+  summarizer-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: summarizer-client
+    command: ["client.py"]
+    depends_on:
+      - "summarizer-server"
+    networks:
+      - rabbitmq-network
+
+  rabbitmq-service:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-service
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics check_running"]
+      interval: 30s
+      start_period: 10s
+      timeout: 30s
+      retries: 3
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - rabbitmq-network
