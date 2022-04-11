@@ -1,6 +1,7 @@
 # This is a sample Python script.
 import language_detect
 import en_sum
+#import de_sum
 
 long_text = 'The tower is 324 metres (1,063 ft) tall, about the same height as an 81-storey building, and the ' \
             'tallest structure in Paris. Its base is square, measuring 125 metres (410 ft) on each side. During ' \
@@ -14,6 +15,7 @@ long_text = 'The tower is 324 metres (1,063 ft) tall, about the same height as a
 print(language_detect.detect_language(long_text))
 
 print(en_sum.summary(long_text))
+
 def summarize(long_text: str, lan_code = '') -> str:
     # Detect used language first
     if lan_code == '':
@@ -37,7 +39,7 @@ def summarize(long_text: str, lan_code = '') -> str:
     elif lan_code == 'zh':
         b = 6
     # Swedish
-    elif lan_code =="sv":
+    elif lan_code == 'sv':
         b = 7
     else:
         print('language not supported')

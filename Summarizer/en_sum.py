@@ -2,7 +2,8 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import nltk
 
 tokenizer = AutoTokenizer.from_pretrained('en_sum/distilbart-cnn-12-6')
-model = AutoModelForSeq2SeqLM.from_pretrained("en_sum/distilbart-cnn-12-6")
+model = AutoModelForSeq2SeqLM.from_pretrained('en_sum/distilbart-cnn-12-6')
+
 
 def summary(long_text: str) -> str:
     if len(long_text) > tokenizer.model_max_length:
@@ -21,21 +22,18 @@ def summary(long_text: str) -> str:
                     chunks.append(chunk.strip())
             else:
                 chunks.append(chunk.strip())
-
                 chunk = ''
-                length = 0
                 # Taking care of the extra sentence
                 chunk += sentence + ' '
                 length = len(tokenizer.tokenize(sentence))
-        print(len(chunks))
         inputs = [tokenizer(c, return_tensors='pt') for c in chunks]
 
         for input in inputs:
             outs = model.generate(**input)
         return ''.join(tokenizer.batch_decode(*outs, skip_special_tokens=True))
     else:
-        inputs = tokenizer([long_text], return_tensors="pt")
-        outs = model.generate(inputs["input_ids"])
+        inputs = tokenizer([long_text], return_tensors='pt')
+        outs = model.generate(inputs['input_ids'])
         return tokenizer.batch_decode(outs, skip_special_tokens=True)
 
 
