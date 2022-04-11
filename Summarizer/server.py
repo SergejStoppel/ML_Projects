@@ -1,4 +1,5 @@
 import pika
+import main
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='rabbitmq-service'))
@@ -16,11 +17,8 @@ def fib(n):
         return fib(n - 1) + fib(n - 2)
 
 def on_request(ch, method, props, body):
-    n = int(body)
-
-    print(" [.] fib(%s)" % n)
-    response = fib(n)
-
+    long_text = str(body)
+    response = main.summarize(long_text)
     ch.basic_publish(exchange='',
                      routing_key=props.reply_to,
                      properties=pika.BasicProperties(correlation_id = \

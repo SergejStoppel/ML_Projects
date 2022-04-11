@@ -18,18 +18,6 @@ services:
     networks:
       - rabbitmq-network
 
-
-  summarizer-client:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: summarizer-client
-    command: ["client.py"]
-    depends_on:
-      - "summarizer-server"
-    networks:
-      - rabbitmq-network
-
   rabbitmq-service:
     image: rabbitmq:3-management
     container_name: rabbitmq-service
