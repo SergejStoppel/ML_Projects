@@ -1,7 +1,5 @@
 #!/bin/sh
 
-python model_importer.py
-
 git lfs install
 export GIT_LFS_SKIP_SMUDGE=1
 
@@ -40,7 +38,7 @@ if [ ! -d "$SUMMARY_MODEL_DIR_MULTI" ]; then
     git clone "$MODEL_URL_MULTI" "$SUMMARY_MODEL_DIR_MULTI"
 fi
 
-cd "$SUMMARY_MODEL_DIR_MULTI" && git lfs pull --include "pytorch_model.bin"
+cd "$SUMMARY_MODEL_DIR_MULTI" && git lfs pull --include "pytorch_model.bin, spiece.model"
 
 SUMMARY_DIR_NL="$SUMMARY_DIR"/nl_sum
 SUMMARY_MODEL_DIR_NL="$SUMMARY_DIR_NL"/t5-v1.1-base-dutch-cnn-test

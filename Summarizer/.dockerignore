@@ -13,3 +13,6 @@ logs/
 #Ignoring all the markdown and class files
 *.md
 **/*.class
+
+#Ignoring the models
+**/models
