@@ -1,54 +1,42 @@
 #!/bin/sh
 
+set -eu
+
 git lfs install
 export GIT_LFS_SKIP_SMUDGE=1
 
+populate_lfs() {
+    local MODEL_DIR=$1
+    local MODEL_URL=$2
+    local MODEL_INCLUDE=$3
+
+    if [ ! -d "$MODEL_DIR" ]; then  
+        git clone "$MODEL_URL" "$MODEL_DIR"
+    fi
+
+    git -C "$MODEL_DIR" lfs pull --include "$MODEL_INCLUDE"
+}
+
 WORKING_DIR=$(pwd)
+MODELS_DIR="$WORKING_DIR"/models
 
-SUMMARY_DIR="$WORKING_DIR"/models
-
-SUMMARY_DIR_EN="$SUMMARY_DIR"/en_sum
-SUMMARY_MODEL_DIR_EN="$SUMMARY_DIR_EN"/distilbart-cnn-12-6
+SUMMARY_MODEL_DIR_EN="$MODELS_DIR"/en_sum/distilbart-cnn-12-6
 MODEL_URL_EN=https://huggingface.co/sshleifer/distilbart-cnn-12-6
 
-if [ ! -d "$SUMMARY_MODEL_DIR_EN" ]; then  
-    mkdir -p "$SUMMARY_DIR_EN" && cd "$SUMMARY_DIR_EN"
-    git clone "$MODEL_URL_EN" "$SUMMARY_MODEL_DIR_EN"
-fi
-
-cd "$SUMMARY_MODEL_DIR_EN" && git lfs pull --include "pytorch_model.bin"
-
-SUMMARY_DIR_DE="$SUMMARY_DIR"/de_sum
-SUMMARY_MODEL_DIR_DE="$SUMMARY_DIR_DE"/bert2bert_shared-german-finetuned-summarization
+SUMMARY_MODEL_DIR_DE="$MODELS_DIR"/de_sum/bert2bert_shared-german-finetuned-summarization
 MODEL_URL_DE=https://huggingface.co/mrm8488/bert2bert_shared-german-finetuned-summarization
 
-if [ ! -d "$SUMMARY_MODEL_DIR_DE" ]; then  
-    mkdir -p "$SUMMARY_DIR_DE" && cd "$SUMMARY_DIR_DE"
-    git clone "$MODEL_URL_DE" "$SUMMARY_MODEL_DIR_DE"
-fi
-
-cd "$SUMMARY_MODEL_DIR_DE" && git lfs pull --include "pytorch_model.bin"
-
-SUMMARY_DIR_MULTI="$SUMMARY_DIR"/multi_sum
-SUMMARY_MODEL_DIR_MULTI="$SUMMARY_DIR_MULTI"/mT5_multilingual_XLSum
+SUMMARY_MODEL_DIR_MULTI="$MODELS_DIR"/multi_sum/mT5_multilingual_XLSum
 MODEL_URL_MULTI=https://huggingface.co/csebuetnlp/mT5_multilingual_XLSum
 
-if [ ! -d "$SUMMARY_MODEL_DIR_MULTI" ]; then  
-    mkdir -p "$SUMMARY_DIR_MULTI" && cd "$SUMMARY_DIR_MULTI"
-    git clone "$MODEL_URL_MULTI" "$SUMMARY_MODEL_DIR_MULTI"
-fi
-
-cd "$SUMMARY_MODEL_DIR_MULTI" && git lfs pull --include "pytorch_model.bin, spiece.model"
-
-SUMMARY_DIR_NL="$SUMMARY_DIR"/nl_sum
-SUMMARY_MODEL_DIR_NL="$SUMMARY_DIR_NL"/t5-v1.1-base-dutch-cnn-test
+SUMMARY_MODEL_DIR_NL="$MODELS_DIR"/nl_sum/t5-v1.1-base-dutch-cnn-test
 MODEL_URL_NL=https://huggingface.co/yhavinga/t5-v1.1-base-dutch-cnn-test
 
-if [ ! -d "$SUMMARY_MODEL_DIR_NL" ]; then  
-    mkdir -p "$SUMMARY_DIR_NL" && cd "$SUMMARY_DIR_NL"
-    git clone "$MODEL_URL_NL" "$SUMMARY_MODEL_DIR_NL"
-fi
+populate_lfs $SUMMARY_MODEL_DIR_EN $MODEL_URL_EN "pytorch_model.bin" &
+populate_lfs $SUMMARY_MODEL_DIR_DE $MODEL_URL_DE "pytorch_model.bin" &
+populate_lfs $SUMMARY_MODEL_DIR_MULTI $MODEL_URL_MULTI "pytorch_model.bin, spiece.model" &
+populate_lfs $SUMMARY_MODEL_DIR_NL $MODEL_URL_NL "pytorch_model.bin" &
 
-cd "$SUMMARY_MODEL_DIR_NL" && git lfs pull --include "pytorch_model.bin"
+wait
 
-cd $WORKING_DIR && python model_importer.py
+python "$WORKING_DIR"/model_importer.py
