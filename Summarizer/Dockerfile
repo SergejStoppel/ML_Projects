@@ -4,14 +4,10 @@ RUN conda update --all -y && \
     conda clean -ay
 
 WORKDIR /home/summarizer
-COPY models_populate.sh .
 
+COPY . .
 RUN chmod +x models_populate.sh
 RUN ./models_populate.sh
 
-COPY . .
-#RUN python model_importer.py
-
-#CMD ["server.py"]
-#ENTRYPOINT ["python"]
-
+CMD ["server.py"]
+ENTRYPOINT ["python"]

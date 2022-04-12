@@ -3,9 +3,9 @@
 git lfs install
 export GIT_LFS_SKIP_SMUDGE=1
 
-PWD=$(pwd)
+WORKING_DIR=$(pwd)
 
-SUMMARY_DIR="$PWD/models"
+SUMMARY_DIR="$WORKING_DIR"/models
 
 SUMMARY_DIR_EN="$SUMMARY_DIR"/en_sum
 SUMMARY_MODEL_DIR_EN="$SUMMARY_DIR_EN"/distilbart-cnn-12-6
@@ -50,3 +50,5 @@ if [ ! -d "$SUMMARY_MODEL_DIR_NL" ]; then
 fi
 
 cd "$SUMMARY_MODEL_DIR_NL" && git lfs pull --include "pytorch_model.bin"
+
+cd $WORKING_DIR && python model_importer.py

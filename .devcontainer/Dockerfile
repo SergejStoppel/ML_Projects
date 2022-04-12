@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 RUN conda update --all -y && \
-    conda install -c conda-forge transformers langdetect nltk pika git-lfs && \
+    conda install -c conda-forge transformers langdetect nltk pika protobuf sentencepiece git-lfs && \
     conda clean -ay
     
 ARG USERNAME=vscode
